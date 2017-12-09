@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Untitled Document</title>
+		<script src="http://crazymatt.net/res/scripts/jquery/3.2.1.min.js"></script>
+		<script>
+			
+			var codeStatus = [0,0,0,0,0];
+			
+			function toggleLED(elem){
+				var ledNum = parseInt(elem.getAttribute("data-place"));
+				
+				if(codeStatus[ledNum] == 0){
+					codeStatus[ledNum] = 1;
+					elem.style.backgroundColor = elem.getAttribute("data-color2");
+				}else{
+					codeStatus[ledNum] = 0;
+					elem.style.backgroundColor = elem.getAttribute("data-color");
+				}
+				
+				return codeStatus[ledNum];
+			}
+			
+			$(document).ready(function(){
+				// Initialize the "tabs" at the bottom
+				$(".debugLEDs tr:nth-child(2) td").each(function(num,elem){
+					elem.style.backgroundColor = elem.getAttribute("data-color");
+				});
+				
+				// Initialize the dynamic, interactive "LEDs"
+				$(".debugLEDs tr:nth-child(1) td").each(function(num,elem){
+					elem.style.backgroundColor = elem.getAttribute("data-color");
+					$(elem).on("click", function(){
+						toggleLED(elem);
+						updateReadout();
+					});
+				});
+			});
+			
+			function updateReadout(){
+				$("#code").html(codeStatus.concat());
+				$.getJSON("https://raw.githubusercontent.com/JGHS-Robotics/DebugCodes/master/codes.json", function(data){
+					var description = data[codeStatus.toString().replace(RegExp(/,/,"g"),"")];
+					if(description == ""){
+						description = "???";
+					}
+					$("#codeDescription").html(description);
+				});
+			}
+		</script>
+		<style>
+			body{
+				background-color: lightgrey;
+				text-align: center;
+			}
+			.debugLEDs{
+				display: inline-block;
+				border-collapse: collapse;
+				border: 1px solid black;
+			}
+			
+			.debugLEDs tr:nth-child(1) td{
+				width: 90px;
+				height: 130px;
+				background-color: grey;
+			}
+			
+			.debugLEDs tr:nth-child(1) td:hover{
+				outline: 2px black solid;
+			}
+			
+			.debugLEDs tr:nth-child(2) td{
+				width: 90px;
+				height: 20px;
+				border-top: 1px solid black;
+				background-color: grey;
+			}
+			
+			.debugLink{
+				display: block;
+				position: fixed;
+				bottom: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>VEX Debug Code Readout</h1>
+		<table class="debugLEDs">
+			<tr>
+				<td data-place="0" data-color="maroon" data-color2="red"></td>
+				<td data-place="1" data-color="maroon" data-color2="red"></td>
+				<td data-place="2" data-color="maroon" data-color2="red"></td>
+				<td data-place="3" data-color="gold"   data-color2="yellow"></td>
+				<td data-place="4" data-color="green"  data-color2="limegreen"></td>
+			</tr>
+			<tr>
+				<td data-color="maroon"></td>
+				<td data-color="maroon"></td>
+				<td data-color="maroon"></td>
+				<td data-color="gold"></td>
+				<td data-color="green"></td>
+			</tr>
+		</table><br>
+		<span id="code">00000</span>
+		<p id="codeDescription">...</p>
+		<div class="debugLink"><a href="https://github.com/JGHS-Robotics/DebugCodes" style="font-size: 10pt;">GitHub</a></div>
+	</body>
+</html>
