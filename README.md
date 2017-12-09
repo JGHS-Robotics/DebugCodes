@@ -1,2 +1,2 @@
 # DebugCodes
-See <codes.json> for access codes.
+See <codes.json> for debug codes.
